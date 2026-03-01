@@ -19,24 +19,22 @@ DATABASE_KEYWORDS = {
 
 }
 
+# Buat session global di luar fungsi
+session = requests.Session()
+
 def send_bot_notification(user_id, text):
-    """Fungsi dengan timeout agar tidak macet saat koneksi buruk"""
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
     payload = {
         "chat_id": user_id,
         "text": text,
         "parse_mode": "Markdown",
-        "disable_web_page_preview": False # Supaya link bisa diklik dengan preview
+        "disable_web_page_preview": False
     }
     try:
-        # Kita tambah timeout 10 detik agar tidak menunggu selamanya
-        response = requests.post(url, json=payload, timeout=10)
-        response.raise_for_status() # Cek apakah ada error dari Telegram
-        print(f"✅ Notifikasi terkirim ke {user_id}")
-    except requests.exceptions.Timeout:
-        print(f"❌ Koneksi Timeout: Server Telegram kelamaan responnya.")
+        # Gunakan session.post agar lebih responsif
+        session.post(url, json=payload, timeout=5)
     except Exception as e:
-        print(f"❌ Gagal kirim via Bot API: {e}")
+        print(f"Gagal kirim: {e}")
 
 @client.on(events.NewMessage(chats=CHANNELS_TO_WATCH))
 @client.on(events.NewMessage(chats=CHANNELS_TO_WATCH))
