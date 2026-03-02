@@ -247,29 +247,37 @@ async def send_wording_callback(event):
         await event.answer(f"❌ ERROR: {err_msg}...", alert=True)
 
 # --- 6. JALANKAN SEMUA (HAPUS DOUBLE START) ---
+# --- 6. JALANKAN SEMUA (VERSI BERSIH & AUTO-RUN) ---
 
 async def main():
-    # Start Userbot (Akun Pribadi)
+    # 1. Start Userbot (Akun Pribadi)
+    # .start() di dalam async main tidak akan bikin stuck
     await userbot.start()
-    print("✅ Userbot Active (Monitoring & Replying)")
-    
-    # Ambil info diri agar kita tahu ID akun Userbot
     me = await userbot.get_me()
-    print(f"Logged in as: {me.first_name} (ID: {me.id})")
+    print(f"✅ Userbot Active: {me.first_name} (ID: {me.id})")
     
-    # Jalankan bot utama sampai terputus
-    # Note: main_bot.start() sudah dipanggil di bagian inisialisasi atas
-    print("✅ Main Bot Active (Handling UI)")
+    # 2. Start Main Bot (UI & Tombol)
+    # main_bot sudah di .start() di atas, kita cukup panggil run_until_disconnected
+    print("✅ Main Bot Active & Listening...")
+    
+    # 3. Jalankan keduanya secara bersamaan
     await main_bot.run_until_disconnected()
 
 if __name__ == '__main__':
     import asyncio
-    print("🚀 MonitorBoy SaaS Mode Active...")
+    
+    # Inisialisasi DB sebelum jalan
+    init_db() 
+    
+    print("🚀 Sistem MonitorBoy Memulai...")
     try:
+        # Gunakan loop yang sudah ada atau buat baru
         loop = asyncio.get_event_loop()
         loop.run_until_complete(main())
     except KeyboardInterrupt:
-        pass
+        print("\n🛑 Bot dihentikan oleh User.")
+    except Exception as e:
+        print(f"\n❌ Error Fatal: {e}")
 
 # Jalankan Semua
 print("🚀 MonitorBoy SaaS Mode Active...")
